@@ -42,14 +42,6 @@ public class RequestReplyDemo {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    private static final String MESSAGE_SENT_TEMPLATE = "*************************************************************\n"
-            + "Message sent and acknowledged by the server with metadata: {}"
-            + "\n*************************************************************";
-
-    private static final String REPLY_RECEIVED_TEMPLATE = "*************************************************************\n"
-            + "Reply received with value: {}"
-            + "\n*************************************************************";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestReplyDemo.class);
 
     public static void main(String[] args) {
@@ -59,16 +51,17 @@ public class RequestReplyDemo {
     @Bean
     public ApplicationRunner runner(ReplyingKafkaTemplate<String, String, String> template) {
         return args -> {
-            ProducerRecord<String, String> record = new ProducerRecord<>(REQUEST_TOPIC, "test 123 teeeest");
+            ProducerRecord<String, String> record = new ProducerRecord<>(REQUEST_TOPIC, "test 1, 2, 3 teeeeeeeeeeeeeest");
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, REPLY_TOPIC.getBytes()));
-
             RequestReplyFuture<String, String, String> replyFuture = template.sendAndReceive(record);
-
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get();
-            LOGGER.debug(MESSAGE_SENT_TEMPLATE, sendResult.getRecordMetadata());
-
+            LOGGER.error("*************************************************************\n"
+                    + "Sent ok: " + sendResult.getRecordMetadata()
+                    + "\n*************************************************************");
             ConsumerRecord<String, String> consumerRecord = replyFuture.get();
-            LOGGER.debug(REPLY_RECEIVED_TEMPLATE, consumerRecord.value());
+            LOGGER.error("*************************************************************\n" +
+                    "Return value: " + consumerRecord.value()
+                    + "\n*************************************************************");
         };
     }
 

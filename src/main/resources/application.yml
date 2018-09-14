@@ -1,0 +1,8 @@
+spring:
+  kafka:
+    bootstrap-servers: PLAINTEXT://kafka1:29091,kafka2:29092,kafka3:29093
+
+app:
+  topic:
+    request_topic: kRequests
+    reply_topic: kReplies

@@ -6,3 +6,6 @@ app:
   topic:
     request_topic: kRequests
     reply_topic: kReplies
+
+server:
+  port: 8081

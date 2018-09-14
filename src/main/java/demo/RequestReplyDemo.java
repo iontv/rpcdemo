@@ -42,27 +42,8 @@ public class RequestReplyDemo {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestReplyDemo.class);
-
     public static void main(String[] args) {
-        SpringApplication.run(RequestReplyDemo.class, args).close();
-    }
-
-    @Bean
-    public ApplicationRunner runner(ReplyingKafkaTemplate<String, String, String> template) {
-        return args -> {
-            ProducerRecord<String, String> record = new ProducerRecord<>(REQUEST_TOPIC, "test 1, 2, 3 teeeeeeeeeeeeeest");
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, REPLY_TOPIC.getBytes()));
-            RequestReplyFuture<String, String, String> replyFuture = template.sendAndReceive(record);
-            SendResult<String, String> sendResult = replyFuture.getSendFuture().get();
-            LOGGER.error("*************************************************************\n"
-                    + "Sent ok: " + sendResult.getRecordMetadata()
-                    + "\n*************************************************************");
-            ConsumerRecord<String, String> consumerRecord = replyFuture.get();
-            LOGGER.error("*************************************************************\n" +
-                    "Return value: " + consumerRecord.value()
-                    + "\n*************************************************************");
-        };
+        SpringApplication.run(RequestReplyDemo.class, args);
     }
 
     @Bean
